@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import json
-import base64
 import os
 
 BACKEND = os.environ.get("BACKEND_URL", "http://backend:8000")
@@ -101,10 +100,26 @@ def diagram_stats(d):
 
 
 def mermaid_preview(code: str):
-    """Render Mermaid diagram via mermaid.ink as an image."""
-    encoded = base64.urlsafe_b64encode(code.encode()).decode()
-    url = f"https://mermaid.ink/img/{encoded}?type=png&bgColor=1e2130"
-    st.image(url, use_container_width=True)
+    """Render Mermaid diagram inline via mermaid.js."""
+    import json
+    code_json = json.dumps(code)
+    html = f"""
+    <div id="mermaid-out" style="background:#1e2130;border-radius:8px;padding:16px;overflow:auto;"></div>
+    <div id="mermaid-err" style="color:#ff4b4b;font-size:13px;padding:8px;display:none;"></div>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({{ startOnLoad: false, theme: 'dark' }});
+      try {{
+        const {{ svg }} = await mermaid.render('mermaid-svg', {code_json});
+        document.getElementById('mermaid-out').innerHTML = svg;
+      }} catch (e) {{
+        const err = document.getElementById('mermaid-err');
+        err.style.display = 'block';
+        err.textContent = 'Diagram render error: ' + e.message;
+      }}
+    </script>
+    """
+    st.components.v1.html(html, height=500, scrolling=True)
 
 
 def render_node_table(diagram):

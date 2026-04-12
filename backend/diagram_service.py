@@ -184,33 +184,59 @@ class DiagramService:
     # ------------------------------------------------------------------ #
     def to_mermaid(self, diagram: dict) -> str:
         ir = DiagramIR(**diagram)
-        lines = ["flowchart TD"]
+
+        def safe_label(text: str) -> str:
+            """Strip characters that break Mermaid syntax."""
+            return (text.replace('"', "'")
+                        .replace("#", "")
+                        .replace("|", "/")
+                        .replace("{", "(")
+                        .replace("}", ")")
+                        .strip())
+
+        _MERMAID_RESERVED = {
+            "end", "start", "subgraph", "style", "default", "class",
+            "classDef", "click", "linkStyle", "direction", "graph",
+            "flowchart", "sequenceDiagram", "stateDiagram",
+        }
+
+        def safe_id(node_id: str) -> str:
+            """Ensure node ID is a valid Mermaid identifier."""
+            sanitized = re.sub(r"[^a-zA-Z0-9_]", "_", node_id)
+            if sanitized.lower() in _MERMAID_RESERVED:
+                sanitized = sanitized + "_node"
+            return sanitized
 
         shape_map = {
-            "start":        ('["{label}"]', "([{label}])"),
-            "end":          ('["{label}"]', "([{label}])"),
-            "process":      ('["{label}"]', '["{label}"]'),
-            "decision":     ('{{"{label}"}}', '{{"{label}"}}'),
-            "input_output": ('[/"{label}"/]', '[/"{label}"/]'),
-            "queue":        ('[["{label}"]]', '[["{label}"]]'),
-            "storage":      ('[("`{label}`")]', '[("`{label}`")]'),
-            "actor":        ('("{label}")', '("{label}")'),
+            "start":        "([LABEL])",
+            "end":          "([LABEL])",
+            "process":      "[LABEL]",
+            "decision":     "{LABEL}",
+            "input_output": "[/LABEL/]",
+            "queue":        "[[LABEL]]",
+            "storage":      "[(LABEL)]",
+            "actor":        "(LABEL)",
         }
-        default_shape = '["{label}"]'
+        default_shape = "[LABEL]"
 
         def node_shape(node: Node) -> str:
-            shapes = shape_map.get(node.type.lower())
-            template = shapes[0] if shapes else default_shape
-            label = node.label.replace('"', "'")
-            return template.replace("{label}", label)
+            template = shape_map.get(node.type.lower(), default_shape)
+            return template.replace("LABEL", f'"{safe_label(node.label)}"')
+
+        # Build an ID remap in case any IDs needed sanitising
+        id_map = {n.id: safe_id(n.id) for n in ir.nodes}
+
+        lines = [
+            "%%{init: {'flowchart': {'curve': 'basis', 'htmlLabels': false}}}%%",
+            "flowchart TD",
+        ]
 
         for node in ir.nodes:
-            shape = node_shape(node)
-            lines.append(f"    {node.id}{shape}")
+            lines.append(f"    {id_map[node.id]}{node_shape(node)}")
 
-        starts    = [n.id for n in ir.nodes if n.type.lower() == "start"]
-        ends      = [n.id for n in ir.nodes if n.type.lower() == "end"]
-        decisions = [n.id for n in ir.nodes if n.type.lower() == "decision"]
+        starts    = [id_map[n.id] for n in ir.nodes if n.type.lower() == "start"]
+        ends      = [id_map[n.id] for n in ir.nodes if n.type.lower() == "end"]
+        decisions = [id_map[n.id] for n in ir.nodes if n.type.lower() == "decision"]
         if starts:
             lines.append(f"    style {starts[0]} fill:#2E74B5,color:#fff,stroke:#1F3864")
         for e in ends:
@@ -218,9 +244,16 @@ class DiagramService:
         for d in decisions:
             lines.append(f"    style {d} fill:#FFC000,color:#000,stroke:#C47A00")
 
+        node_ids = set(id_map.values())
         for edge in ir.edges:
-            arrow = f"-->{'' if not edge.label else f'|{edge.label}|'}"
-            lines.append(f"    {edge.source} {arrow} {edge.target}")
+            src, tgt = id_map.get(edge.source, edge.source), id_map.get(edge.target, edge.target)
+            # Skip self-loops — they cause the "suitable point" layout error
+            if src == tgt or src not in node_ids or tgt not in node_ids:
+                continue
+            if edge.label:
+                lines.append(f'    {src} -- "{safe_label(edge.label)}" --> {tgt}')
+            else:
+                lines.append(f"    {src} --> {tgt}")
 
         return "\n".join(lines)
 
