@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+*.pem
+*.key
 
 # Python
 __pycache__/
@@ -20,6 +22,28 @@ env/
 
 # Docker
 *.log
+
+# Node / frontend
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+.yarn/cache/
+.yarn/unplugged/
+.next/
+out/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local tooling
+.claude/
+.dist/
 
 # macOS
 .DS_Store

@@ -1,0 +1,9 @@
+{
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+  "exclude": ["node_modules"]

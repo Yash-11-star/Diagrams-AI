@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root {
+  --apple-dark: #1d1d1f;
+  --apple-border: #d2d2d7;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  background: var(--apple-bg);
+}
+
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb:hover { background: #b0b0b5; }
+
+
+.arch-canvas .react-flow__edges,
+.arch-canvas .react-flow__edgelabels {
+}
+
+.usecase-canvas .react-flow__edgelabels {
+}
+.usecase-canvas .react-flow__edgelabel-renderer {
+  z-index: 2;
+
+  z-index: 0 !important;
+
+.usecase-canvas .react-flow__node-actorNode {
+}
+
+  opacity: 0;
+  transition: opacity 120ms ease;
+
+.usecase-canvas .react-flow__node.selected .react-flow__handle,
+.usecase-canvas .react-flow__node .react-flow__handle.connectingfrom,
+  opacity: 1;
+}

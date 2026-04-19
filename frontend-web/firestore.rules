@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+    function isSignedIn() {
+    }
+    function isOwner() {
+    }
+    match /diagrams/{diagramId} {
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.diagramType is string
+        && request.resource.data.localMetaId is string
+        && request.resource.data.version >= 1;
+      allow read: if isOwner();
+      allow update: if isOwner()
+        && request.resource.data.localMetaId == resource.data.localMetaId
+        && request.resource.data.categoryId == resource.data.categoryId
+        && request.resource.data.version >= resource.data.version;
+      allow delete: if isOwner();
+
+      allow read, write: if false;
+  }

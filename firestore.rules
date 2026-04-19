@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Diagrams ──────────────────────────────────────────────────────────────
+    // Each diagram document carries a `userId` field set on create.
+    // Only the owning authenticated user may read or write their own diagrams.
+    match /diagrams/{diagramId} {
+      // Allow reads only to the owning user
+      allow read: if request.auth != null
+                  && request.auth.uid == resource.data.userId;
+
+      // Allow create when the caller sets their own uid as userId
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.userId;
+
+      // Allow update / delete only to the owning user
+      allow update, delete: if request.auth != null
+                             && request.auth.uid == resource.data.userId;
+    }
+
+    // Deny everything else by default (implicit, but explicit is safer)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

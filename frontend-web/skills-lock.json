@@ -1,0 +1,33 @@
+{
+  "skills": {
+      "source": "firebase/agent-skills",
+      "computedHash": "aa92490e4db5038730c629477ad968796f329040433625cf9b7bb13e26a859e3"
+    "developing-genkit-go": {
+      "sourceType": "github",
+    },
+      "source": "firebase/agent-skills",
+      "computedHash": "2fa9adb27f7cfc4635decebea65222cd56e36b5de34781f7862be888504c04f4"
+    "firebase-ai-logic": {
+      "sourceType": "github",
+    },
+      "source": "firebase/agent-skills",
+      "computedHash": "7f0e0330510b4e6b06bcede472cebb183a491b8a0098f92d7563454c40d78050"
+    "firebase-auth-basics": {
+      "sourceType": "github",
+    },
+      "source": "firebase/agent-skills",
+      "computedHash": "c22edefdc07886432f1361b0412f82ccd53f82d107005acd6dae326f1e106ea7"
+    "firebase-data-connect": {
+      "sourceType": "github",
+    },
+      "source": "firebase/agent-skills",
+      "computedHash": "528bd602aa93a4409842a4e6f9888b8438521953253b0a629aeaf10603823bf9"
+    "firebase-firestore-standard": {
+      "sourceType": "github",
+    },
+      "source": "firebase/agent-skills",
+      "computedHash": "fb86fd4035e8e6379931faeb443557ac6f2e43fde04b397433f287e69b6532a9"
+    "firestore-security-rules-auditor": {
+      "sourceType": "github",
+    }
+}
