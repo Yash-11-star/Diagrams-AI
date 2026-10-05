@@ -1,9 +1,4 @@
 # Agentic Figure Drawing
-**ECE 50874 · Group 3 · Purdue University**
-
-Generate and iteratively edit fully editable diagrams from natural-language descriptions using Gemini 2.0 Flash or GPT-4.1.
-
----
 
 ## Architecture
 
@@ -133,10 +128,3 @@ The IR is the source of truth for every diagram. It is a Pydantic-validated JSON
 | `POST` | `/export/drawio` | Convert IR → draw.io XML |
 
 Full interactive docs at `http://localhost:8000/docs`.
-
----
-
-## Team
-- Rushali Dhar — dhar30@purdue.edu
-- Vedant Prabhu — prabhu76@purdue.edu
-- Yash Tembhurnikar — ytembhur@purdue.edu
